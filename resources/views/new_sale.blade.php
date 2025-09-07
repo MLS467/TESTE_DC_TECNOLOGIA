@@ -68,6 +68,6 @@
             </div>
     </form>
 
-    <script src="{{ asset('assets/js/index.js') }}" type="module"></script>
+    <script src="{{ asset('assets/js/new_sale/index.js') }}" type="module"></script>
 
 </x-layout.main>

@@ -7,7 +7,7 @@
         <li><a href="{{ route('order.index') }}" class="nav-link px-2 link-secondary">Nova Venda</a></li>
         <li><a href="{{ route('client.index') }}" class="nav-link px-2 link-secondary">Clientes</a></li>
         <li><a href="{{ route('product.index') }}" class="nav-link px-2 link-secondary">Produtos</a></li>
-        <li><a href="#" class="nav-link px-2 link-secondary">Pagamento</a></li>
+        <li><a href="{{ route('payment') }}" class="nav-link px-2 link-secondary">Pagamento</a></li>
     </ul>
     <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> <input type="search" class="form-control"
             placeholder="Search..." aria-label="Search"> </form>

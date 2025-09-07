@@ -13,6 +13,9 @@ Route::resources([
     'order' => OrderController::class,
 ]);
 
+Route::view('/payment', 'payment')->name('payment');
+
+Route::post('/test', [ProductController::class, 'test'])->name('test');
 
 Route::get('/test_connection', function () {
     try {
