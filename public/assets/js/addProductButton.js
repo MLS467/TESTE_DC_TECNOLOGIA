@@ -1,3 +1,5 @@
+import { addLocalStorage } from "./localStorage.js";
+
 const productSelect = document.getElementById("productSelect");
 const quantityInput = document.getElementById("quantity");
 const unitValueInput = document.getElementById("unit_value");
@@ -47,6 +49,19 @@ addProductButton.addEventListener("click", (event) => {
     tr.appendChild(td3);
     tr.appendChild(td4);
     tr.appendChild(td5);
+
+    const sales = {
+        id_product: productSelect.value,
+        id_client: document.getElementById("clientSelect").value,
+        unit_value: unitValueInput.value,
+        subtotal: subtotalInput.value,
+        products: {
+            item: productSelect.options[productSelect.selectedIndex].text,
+            quantity: quantityInput.value,
+        },
+    };
+
+    addLocalStorage(sales);
 
     productsTableBody.appendChild(tr);
 });
