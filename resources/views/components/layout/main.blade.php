@@ -8,7 +8,8 @@
     <title>{{ env('APP_ENV') }}</title>
 </head>
 
-<body>
+<body class="bg-light">
+    <x-nav.nav />
 
     {{ $slot }}
 
