@@ -10,4 +10,9 @@
         <li><a href="{{ route('sales.index') }}" class="nav-link px-2 link-secondary">Vendas</a></li>
     </ul>
 
+
+    <form action="/logout" method="GET">
+        @csrf
+        <div class="text-end"><button type="submit" class="btn btn-outline-light me-2">Sair</button></div>
+    </form>
 </div>

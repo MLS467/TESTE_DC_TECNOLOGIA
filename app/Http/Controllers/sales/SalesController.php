@@ -29,7 +29,8 @@ class SalesController extends Controller
                     'client_id' => intval($request->input('id_client')),
                     'sale_date' => Carbon::now(),
                     'number_of_installments' => count($request->input('installments')),
-                    'total_amount' => floatval($request->input('subtotal'))
+                    'total_amount' => floatval($request->input('subtotal')),
+                    'seller_id' => session('seller_id')
                 ]);
 
                 foreach ($request->input('installments') as $installment) {
