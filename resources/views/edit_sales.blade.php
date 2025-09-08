@@ -10,7 +10,6 @@
                     @csrf
                     @method('PUT')
 
-                    <!-- Campos Hidden necessários -->
                     <input type="hidden" name="client_id" value="{{ $sale->client_id }}">
                     <input type="hidden" name="total_amount" value="{{ $sale->total_amount }}">
 
