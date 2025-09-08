@@ -10,6 +10,19 @@ const productsTableBody = document.getElementById("productsTableBody");
 addProductButton.addEventListener("click", (event) => {
     event.preventDefault();
 
+    const clientSelect = document.getElementById("clientSelect");
+
+    if (
+        !clientSelect.value ||
+        !productSelect.value ||
+        !quantityInput.value ||
+        quantityInput.value <= 0 ||
+        !unitValueInput.value
+    ) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+    }
+
     const td = document.createElement("td");
     td.textContent = productSelect.options[productSelect.selectedIndex].text
         .split("|")[0]
@@ -38,6 +51,13 @@ addProductButton.addEventListener("click", (event) => {
     const btnEdit = document.createElement("button");
     btnEdit.textContent = "Editar";
     btnEdit.classList.add("btn", "btn-warning", "btn-sm");
+    btnEdit.addEventListener("click", () => {
+        productSelect.value = sales.id_product;
+        quantityInput.value = sales.products.quantity;
+        unitValueInput.value = sales.unit_value;
+        subtotalInput.value = sales.subtotal;
+        productsTableBody.removeChild(tr);
+    });
 
     const td5 = document.createElement("td");
     td5.appendChild(btnDelete);

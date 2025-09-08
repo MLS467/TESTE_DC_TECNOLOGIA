@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ClientStoreRequest;
+use App\Http\Requests\ClientUpdateRequest;
 use App\Models\client\Client;
 use Illuminate\Http\Request;
 
@@ -43,22 +45,27 @@ class ClientController extends Controller
         return view('editClient', ['client' => $client]);
     }
 
-    public function store(Request $request)
+    public function store(ClientStoreRequest $request)
     {
+        $validated = $request->validated();
+
         $client = new Client();
-        $client->name = $request->input('name');
-        $client->cpf = $request->input('cpf');
+        $client->name = $validated['name'];
+        $client->cpf = $validated['cpf'];
         $client->save();
 
         return redirect()->route('client.index');
     }
 
 
-    public function update(Request $request, $id)
+    public function update(ClientUpdateRequest $request, $id)
     {
+        $validated = $request->validated();
+
+
         $client = Client::findOrFail($id);
-        $client->name = $request->input('name');
-        $client->cpf = $request->input('cpf');
+        $client->name = $validated['name'];
+        $client->cpf = $validated['cpf'];
         $client->save();
 
         return redirect()->route('client.index');

@@ -18,7 +18,7 @@
                             <div class="mb-3">
                                 <label for="sale_date" class="form-label">Data da Venda</label>
                                 <input type="date" class="form-control" id="sale_date" name="sale_date"
-                                    value="{{ old('sale_date', $sale->sale_date) }}" required>
+                                    value="{{ old('sale_date', $sale->sale_date) }}">
                                 @error('sale_date')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -30,7 +30,7 @@
                                 <label for="number_of_installments" class="form-label">Número de Parcelas</label>
                                 <input type="number" class="form-control" id="number_of_installments"
                                     name="number_of_installments" min="1" max="12"
-                                    value="{{ old('number_of_installments', $sale->number_of_installments) }}" required>
+                                    value="{{ old('number_of_installments', $sale->number_of_installments) }}">
                                 @error('number_of_installments')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -100,7 +100,7 @@
                                             <input type="number" class="form-control"
                                                 name="items[{{ $index }}][unit_price]"
                                                 value="{{ old('items.'.$index.'.unit_price', $item->unit_price) }}"
-                                                step="0.01" min="0" required>
+                                                step="0.01" min="0">
                                             @error('items.'.$index.'.unit_price')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductStorageRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\product\Product;
 use Illuminate\Http\Request;
 
@@ -43,7 +45,7 @@ class ProductController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(ProductStorageRequest $request)
     {
         $product = new Product();
         $product->name = $request->input('name');
@@ -53,7 +55,7 @@ class ProductController extends Controller
         return redirect()->route('product.index');
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductUpdateRequest $request, $id)
     {
         $product = Product::findOrFail($id);
         $product->name = $request->input('name');

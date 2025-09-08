@@ -1,5 +1,8 @@
 import { createHiddenFields } from "./hiddenFields.js";
-import { getLocalStorage } from "../new_sale/localStorage.js";
+import {
+    getLocalStorage,
+    clearLocalStorage,
+} from "../new_sale/localStorage.js";
 
 const form = document.getElementById("form_payment");
 
@@ -34,4 +37,5 @@ form.addEventListener("submit", function (e) {
     createHiddenFields();
 
     form.submit();
+    clearLocalStorage();
 });

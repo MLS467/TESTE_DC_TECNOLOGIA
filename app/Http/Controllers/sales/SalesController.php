@@ -88,10 +88,16 @@ class SalesController extends Controller
                     'total_amount' => floatval($request->input('total_amount'))
                 ]);
 
+                $quantityUpdated = false;
+
                 if ($request->has('items')) {
                     foreach ($request->input('items') as $itemData) {
                         $salesItem = Sales_item::find($itemData['id']);
                         if ($salesItem) {
+                            if (isset($itemData['quantity']) && $salesItem->quantity != intval($itemData['quantity'])) {
+                                $quantityUpdated = true;
+                            }
+
                             $salesItem->update([
                                 'quantity' => intval($itemData['quantity']),
                                 'unit_price' => floatval($itemData['unit_price']),
@@ -103,6 +109,27 @@ class SalesController extends Controller
 
                 $newTotal = $sale->salesItems()->sum(DB::raw('quantity * unit_price'));
                 $sale->update(['total_amount' => $newTotal]);
+
+                if ($quantityUpdated) {
+                    $sale->installments()->delete();
+                    $totalQuantity = $sale->salesItems()->sum('quantity');
+
+                    if ($totalQuantity > 0) {
+                        $installmentValue = $newTotal / $totalQuantity;
+
+                        for ($i = 1; $i <= $totalQuantity; $i++) {
+                            Installment::create([
+                                'sale_id' => $sale->id,
+                                'amount' => round($installmentValue, 2),
+                                'payment_type' => 'pending',
+                                'due_date' => Carbon::now()->addMonths($i - 1),
+                                'is_paid' => false
+                            ]);
+                        }
+
+                        $sale->update(['number_of_installments' => $totalQuantity]);
+                    }
+                }
             });
 
             return redirect()->route('sales.index')->with('success', 'Venda atualizada com sucesso.');
