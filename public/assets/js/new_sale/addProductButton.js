@@ -59,6 +59,7 @@ addProductButton.addEventListener("click", (event) => {
             id: productSelect.value,
             item: productSelect.options[productSelect.selectedIndex].text,
             quantity: quantityInput.value,
+            unit_value: unitValueInput.value,
         },
     };
 

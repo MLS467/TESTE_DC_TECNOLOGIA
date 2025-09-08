@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\order;
+namespace App\Http\Controllers\sales;
 
 use App\Http\Controllers\Controller;
 use App\Models\client\Client;
 use App\Models\product\Product;
-use Illuminate\Http\Request;
 
-class OrderController extends Controller
+class NewSalesController extends Controller
 {
-    public function index()
+    public function __invoke()
     {
         $client = Client::all();
         $product = Product::all();

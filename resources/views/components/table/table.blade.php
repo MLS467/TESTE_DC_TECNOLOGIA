@@ -13,7 +13,6 @@
         <tr class="text-center">
             <td colspan="{{ count($columns) }}">No data available</td>
         </tr>
-
         @else
 
 
@@ -25,6 +24,5 @@
         </tr>
         @endforeach
         @endif
-
     </tbody>
 </table>

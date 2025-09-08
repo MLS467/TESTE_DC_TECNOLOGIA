@@ -3,7 +3,7 @@
     <h1>Pagamento</h1>
     <p>Por favor, complete seu pagamento.</p>
 
-    <form action="{{ route('test') }}" method="post" id="form_payment">
+    <form action="{{ route('sales.store') }}" method="post" id="form_payment">
         @csrf
         <div id="hiddenFields"></div>
         <div class="container w-50">

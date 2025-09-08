@@ -27,6 +27,12 @@ export const createHiddenFields = () => {
         inputQty.value = prod.quantity;
         container.appendChild(inputQty);
 
+        const inputUnitValue = document.createElement("input");
+        inputUnitValue.type = "hidden";
+        inputUnitValue.name = `products[${index}][unit_value]`;
+        inputUnitValue.value = prod.unit_value;
+        container.appendChild(inputUnitValue);
+
         const inputId = document.createElement("input");
         inputId.type = "hidden";
         inputId.name = `products[${index}][id]`;

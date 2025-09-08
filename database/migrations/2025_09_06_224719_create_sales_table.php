@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->date('order_date');
+            $table->date('sale_date');
             $table->integer('number_of_installments');
             $table->unsignedBigInteger('client_id');
+
             $table->foreign('client_id')
                 ->references('id')
-                ->on('clients')
-                ->onDelete('cascade');
+                ->on('clients');
 
             $table->float('total_amount', 8, 2);
             $table->timestamps();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('sales');
     }
 };

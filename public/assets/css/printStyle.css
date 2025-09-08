@@ -1,0 +1,91 @@
+@media print {
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+.sales-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.label {
+    font-weight: bold;
+    color: #333;
+}
+
+.value {
+    color: #666;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.items-table th,
+.items-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.items-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.total-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e9ecef;
+    border: 2px solid #333;
+    text-align: right;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.print-btn {
+    margin-bottom: 20px;
+}
+
+.sale-section {
+    margin-bottom: 40px;
+}
