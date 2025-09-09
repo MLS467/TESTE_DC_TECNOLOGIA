@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\client\ClientController;
-use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\product\ProductController;
 use App\Http\Controllers\sales\NewSalesController;
 use App\Http\Controllers\sales\printController;
 use App\Http\Controllers\sales\SalesController;

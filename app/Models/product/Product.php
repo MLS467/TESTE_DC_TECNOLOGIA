@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\Product\ProductFactory> */
+    /** @use HasFactory<\Database\Factories\product\ProductFactory> */
     use HasFactory;
 
     protected $fillable = [

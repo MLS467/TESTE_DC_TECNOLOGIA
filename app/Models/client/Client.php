@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    /** @use HasFactory<\Database\Factories\Client\ClientFactory> */
+    /** @use HasFactory<\Database\Factories\client\ClientFactory> */
     use HasFactory;
 
 

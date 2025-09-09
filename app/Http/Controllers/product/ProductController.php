@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Product;
+namespace App\Http\Controllers\product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductStorageRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\product\Product;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
