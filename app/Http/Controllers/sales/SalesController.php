@@ -14,9 +14,30 @@ class SalesController extends Controller
 {
     public function index()
     {
+        session()->forget([
+            'total_amount',
+            'client_id_edit',
+            'sale_id_edit',
+            'is_editing',
+            'installment_edit',
+            'new_installments'
+        ]);
+
         $sales = Sale::with(['client', 'salesItems.product', 'installments'])->get();
 
         return view('sales', ['sales' => $sales]);
+    }
+
+    public function show($id)
+    {
+        $sale = Sale::with(['client', 'salesItems.product', 'installments'])
+            ->find($id);
+
+        if (!$sale) {
+            return redirect()->route('sales.index')->with('error', 'Sale not found.');
+        }
+
+        return view('sales_details', ['sale' => $sale]);
     }
 
     public function store(Request $request)
@@ -66,16 +87,16 @@ class SalesController extends Controller
         $sale = Sale::with(['client', 'salesItems.product', 'installments'])
             ->find($id);
 
-
         if (!$sale) {
             return redirect()->route('sales.index')->with('error', 'Sale not found.');
         }
 
-        if (!session()->has('total_amount')) {
+        if (!session()->has('is_editing')) {
             session([
                 'total_amount' => $sale->total_amount,
                 'client_id_edit' => $sale->client_id,
-                'sale_id_edit' => $sale->id
+                'sale_id_edit' => $sale->id,
+                'is_editing' => false
             ]);
         }
 
@@ -97,6 +118,8 @@ class SalesController extends Controller
             }
 
             $sale->installments = $mappedInstallments;
+            session()->put('new_installments', $mappedInstallments);
+
             session()->forget('installment_edit');
         }
 
@@ -105,8 +128,10 @@ class SalesController extends Controller
 
     public function update(Request $request, $id)
     {
-        dd($request->all());
-        $sale = Sale::find($id);
+        $request['items'] = session()->get('new_installments');
+        $request['sale_id'] = session()->get('sale_id_edit');
+
+        $sale = Sale::find($request['sale_id']);
 
         if (!$sale) {
             return redirect()->route('sales.index')->with('error', 'Sale not found.');
@@ -114,54 +139,16 @@ class SalesController extends Controller
 
         try {
             DB::transaction(function () use ($request, $sale) {
-                $sale->update([
-                    'client_id' => intval($request->input('client_id')),
-                    'sale_date' => $request->input('sale_date'),
-                    'number_of_installments' => intval($request->input('number_of_installments')),
-                    'total_amount' => floatval($request->input('total_amount'))
-                ]);
+                Installment::where('sale_id', $sale->id)->delete();
 
-                $quantityUpdated = false;
-
-                if ($request->has('items')) {
-                    foreach ($request->input('items') as $itemData) {
-                        $salesItem = Sales_item::find($itemData['id']);
-                        if ($salesItem) {
-                            if (isset($itemData['quantity']) && $salesItem->quantity != intval($itemData['quantity'])) {
-                                $quantityUpdated = true;
-                            }
-
-                            $salesItem->update([
-                                'quantity' => intval($itemData['quantity']),
-                                'unit_price' => floatval($itemData['unit_price']),
-                                'total_price' => floatval($itemData['unit_price'] * $itemData['quantity'])
-                            ]);
-                        }
-                    }
-                }
-
-                $newTotal = $sale->salesItems()->sum(DB::raw('quantity * unit_price'));
-                $sale->update(['total_amount' => $newTotal]);
-
-                if ($quantityUpdated) {
-                    $sale->installments()->delete();
-                    $totalQuantity = $sale->salesItems()->sum('quantity');
-
-                    if ($totalQuantity > 0) {
-                        $installmentValue = $newTotal / $totalQuantity;
-
-                        for ($i = 1; $i <= $totalQuantity; $i++) {
-                            Installment::create([
-                                'sale_id' => $sale->id,
-                                'amount' => round($installmentValue, 2),
-                                'payment_type' => 'pending',
-                                'due_date' => Carbon::now()->addMonths($i - 1),
-                                'is_paid' => false
-                            ]);
-                        }
-
-                        $sale->update(['number_of_installments' => $totalQuantity]);
-                    }
+                foreach ($request['items'] as $installment) {
+                    Installment::create([
+                        'sale_id' => $sale->id,
+                        'amount' => floatval($installment['amount']),
+                        'payment_type' => $installment['payment_type'],
+                        'due_date' => Carbon::parse($installment['due_date']),
+                        'is_paid' => false
+                    ]);
                 }
             });
 
@@ -169,6 +156,20 @@ class SalesController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('sales.index')->with('error', 'Falha ao atualizar: ' . $e->getMessage());
         }
+    }
+
+    public function cancelEdit()
+    {
+        session()->forget([
+            'total_amount',
+            'client_id_edit',
+            'sale_id_edit',
+            'is_editing',
+            'installment_edit',
+            'new_installments'
+        ]);
+
+        return redirect()->route('sales.index')->with('info', 'Edição cancelada.');
     }
 
     public function destroy($id)

@@ -26,6 +26,8 @@ Route::middleware(['authenticate'])->group(function () {
     Route::post('/edit-installments', [InstallmentController::class, 'saveInstallmentsInLocalStorage'])->name('installments_save');
 
     Route::get('/edit-installments', [InstallmentController::class, 'editInstallments'])->name('edit_installments');
+
+    Route::get('/sales/cancel-edit', [SalesController::class, 'cancelEdit'])->name('sales.cancel_edit');
 });
 
 

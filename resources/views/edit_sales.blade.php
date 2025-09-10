@@ -252,7 +252,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('sales.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('sales.cancel_edit') }}" class="btn btn-secondary">
                             <i class="fas fa-times me-1"></i>Cancelar
                         </a>
                         <button type="submit" class="btn btn-success">

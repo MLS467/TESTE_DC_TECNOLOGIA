@@ -23,7 +23,7 @@
             <div id="installment" class="row g-3"></div>
             <div class="w-100 text-end">
                 <button type="submit" class="btn btn-success mt-5">Salvar</button>
-                <button type="reset" onclick="location.reload()" class="btn btn-warning mt-5">Cancelar</button>
+                <a href="{{ route('sales.cancel_edit') }}" class="btn btn-warning mt-5">Cancelar</a>
             </div>
         </div>
     </form>

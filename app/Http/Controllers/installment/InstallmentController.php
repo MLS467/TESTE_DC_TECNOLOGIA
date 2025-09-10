@@ -29,7 +29,7 @@ class InstallmentController extends Controller
             'client_id_edit' => $client_id
         ]);
 
-
+        session()->forget('is_editing');
         return redirect()->route('sales.edit', ['sale' => $sale_id]);
     }
 }
