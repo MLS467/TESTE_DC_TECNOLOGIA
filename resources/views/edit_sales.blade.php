@@ -30,7 +30,7 @@
                                 <label for="number_of_installments" class="form-label">Número de Parcelas</label>
                                 <input type="number" class="form-control" id="number_of_installments"
                                     name="number_of_installments" min="1" max="12"
-                                    value="{{ old('number_of_installments', $sale->number_of_installments) }}">
+                                    value="{{ old('number_of_installments', $sale->number_of_installments) }}" readonly>
                                 @error('number_of_installments')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -41,15 +41,23 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Nome do Cliente</label>
-                                <input type="text" class="form-control" value="{{ $sale->client->name }}" readonly>
+                                <label for="client_name" class="form-label">Nome do Cliente</label>
+                                <input type="text" class="form-control" id="client_name" name="client_name"
+                                    value="{{ old('client_name', $sale->client->name) }}">
+                                @error('client_name')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">CPF</label>
-                                <input type="text" class="form-control" value="{{ $sale->client->cpf }}" readonly>
+                                <label for="client_cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control" id="client_cpf" name="client_cpf"
+                                    value="{{ old('client_cpf', $sale->client->cpf) }}">
+                                @error('client_cpf')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -87,7 +95,7 @@
                                             <input type="number" class="form-control"
                                                 name="items[{{ $index }}][quantity]"
                                                 value="{{ old('items.'.$index.'.quantity', $item->quantity) }}" min="1"
-                                                required>
+                                                required readonly>
                                             @error('items.'.$index.'.quantity')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
@@ -100,7 +108,7 @@
                                             <input type="number" class="form-control"
                                                 name="items[{{ $index }}][unit_price]"
                                                 value="{{ old('items.'.$index.'.unit_price', $item->unit_price) }}"
-                                                step="0.01" min="0">
+                                                step="0.01" min="0" readonly>
                                             @error('items.'.$index.'.unit_price')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
@@ -197,10 +205,9 @@
                                 </table>
 
                                 <div class="text-center mt-3">
-
-                                    <a href="{{ route('edit_installments') }}" class="btn btn-warning">
+                                    <button type="button" class="btn btn-warning" onclick="saveFormDataAndRedirect()">
                                         Atualizar Parcelas
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 
@@ -268,6 +275,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const quantityInputs = document.querySelectorAll('input[name*="[quantity]"]');
             const priceInputs = document.querySelectorAll('input[name*="[unit_price]"]');
+            const installmentsInput = document.getElementById('number_of_installments');
+
+            const installmentRows = document.querySelectorAll('tbody tr');
+            if (installmentsInput && installmentRows.length > 0) {
+                installmentsInput.value = installmentRows.length;
+            }
 
             function updateTotals() {
                 let grandTotal = 0;
@@ -295,10 +308,37 @@
                 }
             }
 
+            if (installmentsInput) {
+                installmentsInput.addEventListener('change', function() {
+                    console.log('Número de parcelas alterado para:', this.value);
+                });
+            }
+
             [...quantityInputs, ...priceInputs].forEach(input => {
                 input.addEventListener('input', updateTotals);
             });
         });
+
+        // Função para salvar dados do formulário na sessão antes de ir para parcelas
+        function saveFormDataAndRedirect() {
+            const formData = {
+                sale_date: document.getElementById('sale_date').value,
+                client_name: document.getElementById('client_name').value,
+                client_cpf: document.getElementById('client_cpf').value,
+                number_of_installments: document.getElementById('number_of_installments').value
+            };
+
+            fetch('{{ route("sales.save_form_data") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(formData)
+            }).then(() => {
+                window.location.href = '{{ route("edit_installments") }}';
+            });
+        }
     </script>
 
 </x-layout.main>

@@ -96,7 +96,12 @@ class SalesController extends Controller
                 'total_amount' => $sale->total_amount,
                 'client_id_edit' => $sale->client_id,
                 'sale_id_edit' => $sale->id,
-                'is_editing' => false
+                'is_editing' => false,
+                // Preservar dados do formulário
+                'form_sale_date' => $sale->sale_date,
+                'form_client_name' => $sale->client->name,
+                'form_client_cpf' => $sale->client->cpf,
+                'form_number_of_installments' => $sale->number_of_installments
             ]);
         }
 
@@ -123,15 +128,25 @@ class SalesController extends Controller
             session()->forget('installment_edit');
         }
 
+        if (session()->has('form_sale_date')) {
+            $sale->sale_date = session('form_sale_date');
+        }
+        if (session()->has('form_client_name')) {
+            $sale->client->name = session('form_client_name');
+        }
+        if (session()->has('form_client_cpf')) {
+            $sale->client->cpf = session('form_client_cpf');
+        }
+        if (session()->has('form_number_of_installments')) {
+            $sale->number_of_installments = session('form_number_of_installments');
+        }
+
         return view('edit_sales', ['sale' => $sale]);
     }
 
     public function update(Request $request, $id)
     {
-        $request['items'] = session()->get('new_installments');
-        $request['sale_id'] = session()->get('sale_id_edit');
-
-        $sale = Sale::find($request['sale_id']);
+        $sale = Sale::find($id);
 
         if (!$sale) {
             return redirect()->route('sales.index')->with('error', 'Sale not found.');
@@ -139,16 +154,40 @@ class SalesController extends Controller
 
         try {
             DB::transaction(function () use ($request, $sale) {
-                Installment::where('sale_id', $sale->id)->delete();
+                if ($request->has('sale_date')) {
+                    $sale->sale_date = $request->sale_date;
+                }
 
-                foreach ($request['items'] as $installment) {
-                    Installment::create([
-                        'sale_id' => $sale->id,
-                        'amount' => floatval($installment['amount']),
-                        'payment_type' => $installment['payment_type'],
-                        'due_date' => Carbon::parse($installment['due_date']),
-                        'is_paid' => false
-                    ]);
+                if ($request->has('number_of_installments')) {
+                    $sale->number_of_installments = $request->number_of_installments;
+                }
+
+                if ($request->has('client_name') || $request->has('client_cpf')) {
+                    $client = $sale->client;
+                    if ($request->has('client_name')) {
+                        $client->name = $request->client_name;
+                    }
+                    if ($request->has('client_cpf')) {
+                        $client->cpf = $request->client_cpf;
+                    }
+                    $client->save();
+                }
+
+                $sale->save();
+
+                $newInstallments = session()->get('new_installments');
+                if ($newInstallments) {
+                    Installment::where('sale_id', $sale->id)->delete();
+
+                    foreach ($newInstallments as $installment) {
+                        Installment::create([
+                            'sale_id' => $sale->id,
+                            'amount' => floatval($installment['amount']),
+                            'payment_type' => $installment['payment_type'],
+                            'due_date' => Carbon::parse($installment['due_date']),
+                            'is_paid' => false
+                        ]);
+                    }
                 }
             });
 
@@ -156,6 +195,18 @@ class SalesController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('sales.index')->with('error', 'Falha ao atualizar: ' . $e->getMessage());
         }
+    }
+
+    public function saveFormData(Request $request)
+    {
+        session([
+            'form_sale_date' => $request->sale_date,
+            'form_client_name' => $request->client_name,
+            'form_client_cpf' => $request->client_cpf,
+            'form_number_of_installments' => $request->number_of_installments
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function cancelEdit()
@@ -166,7 +217,11 @@ class SalesController extends Controller
             'sale_id_edit',
             'is_editing',
             'installment_edit',
-            'new_installments'
+            'new_installments',
+            'form_sale_date',
+            'form_client_name',
+            'form_client_cpf',
+            'form_number_of_installments'
         ]);
 
         return redirect()->route('sales.index')->with('info', 'Edição cancelada.');
