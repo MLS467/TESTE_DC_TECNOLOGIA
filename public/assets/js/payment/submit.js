@@ -9,11 +9,25 @@ const form = document.getElementById("form_payment");
 form.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    const quantityInstallments = document.getElementById(
+        "quantity_installments"
+    );
+    if (!quantityInstallments.value || quantityInstallments.value <= 0) {
+        alert("Por favor, preencha a quantidade de parcelas antes de salvar.");
+        quantityInstallments.focus();
+        return;
+    }
+
     let salesLocalStorage = getLocalStorage();
 
     const inputsValor = [
         ...document.querySelectorAll("#installment input[type='text']"),
     ];
+
+    if (inputsValor.length === 0) {
+        alert("Por favor, adicione pelo menos uma parcela antes de salvar.");
+        return;
+    }
 
     let somaParcelas = 0;
     for (let i = 0; i < inputsValor.length; i++) {

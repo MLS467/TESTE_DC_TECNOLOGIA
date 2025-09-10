@@ -12,6 +12,10 @@
     <div class="container vh-100 d-flex justify-content-center align-items-center">
         <div class="card shadow" style="width: 400px;">
             <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="img-fluid"
+                        style="max-width: 150px; height: auto;">
+                </div>
                 <h3 class="card-title text-center mb-4">Login</h3>
 
                 <form method="POST" action="{{ route('login.post') }}">

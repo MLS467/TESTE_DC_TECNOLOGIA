@@ -1,7 +1,10 @@
 <x-layout.main>
 
-    <h1>Pagamento</h1>
-    <p>Por favor, complete seu pagamento.</p>
+    <div class="text-center my-5">
+
+        <h1>Pagamento</h1>
+        <p>Por favor, complete seu pagamento.</p>
+    </div>
 
     <form action="{{ route('sales.store') }}" method="post" id="form_payment">
         @csrf
