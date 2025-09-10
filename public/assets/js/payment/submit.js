@@ -36,6 +36,28 @@ form.addEventListener("submit", function (e) {
 
     createHiddenFields();
 
-    form.submit();
+    // Salvar dados na sessão e redirecionar para preview
+    const formData = new FormData(form);
+
+    fetch("/save-preview-data", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content"),
+        },
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                window.location.href = "/preview-installments";
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            form.submit(); // Fallback para o comportamento original
+        });
+
     clearLocalStorage();
 });

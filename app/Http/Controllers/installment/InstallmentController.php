@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\installment;
 
 use App\Http\Controllers\Controller;
+use App\Models\client\Client;
 use Illuminate\Http\Request;
 
 class InstallmentController extends Controller
@@ -31,5 +32,36 @@ class InstallmentController extends Controller
 
         session()->forget('is_editing');
         return redirect()->route('sales.edit', ['sale' => $sale_id]);
+    }
+
+    public function previewInstallments()
+    {
+        $installments = session('installments', []);
+        $total_amount = session('subtotal', 0);
+        $client_id = session('id_client');
+        $products = session('products', []);
+
+        $client = null;
+        if ($client_id) {
+            $client = Client::find($client_id);
+        }
+
+        if (empty($installments)) {
+            return redirect()->route('new-sale')->with('error', 'Nenhuma parcela encontrada.');
+        }
+
+        return view('preview_installments', compact('installments', 'total_amount', 'client', 'products'));
+    }
+
+    public function savePreviewData(Request $request)
+    {
+        session([
+            'installments' => $request->input('installments'),
+            'subtotal' => $request->input('subtotal'),
+            'id_client' => $request->input('id_client'),
+            'products' => $request->input('products')
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

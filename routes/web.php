@@ -27,6 +27,10 @@ Route::middleware(['authenticate'])->group(function () {
 
     Route::get('/edit-installments', [InstallmentController::class, 'editInstallments'])->name('edit_installments');
 
+    Route::get('/preview-installments', [InstallmentController::class, 'previewInstallments'])->name('preview_installments');
+
+    Route::post('/save-preview-data', [InstallmentController::class, 'savePreviewData'])->name('save_preview_data');
+
     Route::get('/sales/cancel-edit', [SalesController::class, 'cancelEdit'])->name('sales.cancel_edit');
 });
 
