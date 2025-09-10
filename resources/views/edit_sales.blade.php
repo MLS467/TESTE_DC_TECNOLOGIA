@@ -205,9 +205,10 @@
                                 </table>
 
                                 <div class="text-center mt-3">
-                                    <button type="button" class="btn btn-warning" onclick="saveFormDataAndRedirect()">
+
+                                    <a href="{{ route('edit_installments') }}" class="btn btn-warning">
                                         Atualizar Parcelas
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
 
@@ -318,27 +319,6 @@
                 input.addEventListener('input', updateTotals);
             });
         });
-
-        // Função para salvar dados do formulário na sessão antes de ir para parcelas
-        function saveFormDataAndRedirect() {
-            const formData = {
-                sale_date: document.getElementById('sale_date').value,
-                client_name: document.getElementById('client_name').value,
-                client_cpf: document.getElementById('client_cpf').value,
-                number_of_installments: document.getElementById('number_of_installments').value
-            };
-
-            fetch('{{ route("sales.save_form_data") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify(formData)
-            }).then(() => {
-                window.location.href = '{{ route("edit_installments") }}';
-            });
-        }
     </script>
 
 </x-layout.main>

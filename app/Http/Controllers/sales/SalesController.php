@@ -96,12 +96,7 @@ class SalesController extends Controller
                 'total_amount' => $sale->total_amount,
                 'client_id_edit' => $sale->client_id,
                 'sale_id_edit' => $sale->id,
-                'is_editing' => false,
-                // Preservar dados do formulário
-                'form_sale_date' => $sale->sale_date,
-                'form_client_name' => $sale->client->name,
-                'form_client_cpf' => $sale->client->cpf,
-                'form_number_of_installments' => $sale->number_of_installments
+                'is_editing' => false
             ]);
         }
 
@@ -126,19 +121,6 @@ class SalesController extends Controller
             session()->put('new_installments', $mappedInstallments);
 
             session()->forget('installment_edit');
-        }
-
-        if (session()->has('form_sale_date')) {
-            $sale->sale_date = session('form_sale_date');
-        }
-        if (session()->has('form_client_name')) {
-            $sale->client->name = session('form_client_name');
-        }
-        if (session()->has('form_client_cpf')) {
-            $sale->client->cpf = session('form_client_cpf');
-        }
-        if (session()->has('form_number_of_installments')) {
-            $sale->number_of_installments = session('form_number_of_installments');
         }
 
         return view('edit_sales', ['sale' => $sale]);
@@ -197,18 +179,6 @@ class SalesController extends Controller
         }
     }
 
-    public function saveFormData(Request $request)
-    {
-        session([
-            'form_sale_date' => $request->sale_date,
-            'form_client_name' => $request->client_name,
-            'form_client_cpf' => $request->client_cpf,
-            'form_number_of_installments' => $request->number_of_installments
-        ]);
-
-        return response()->json(['success' => true]);
-    }
-
     public function cancelEdit()
     {
         session()->forget([
@@ -217,11 +187,7 @@ class SalesController extends Controller
             'sale_id_edit',
             'is_editing',
             'installment_edit',
-            'new_installments',
-            'form_sale_date',
-            'form_client_name',
-            'form_client_cpf',
-            'form_number_of_installments'
+            'new_installments'
         ]);
 
         return redirect()->route('sales.index')->with('info', 'Edição cancelada.');
