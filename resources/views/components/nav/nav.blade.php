@@ -1,5 +1,6 @@
 <div class="d-flex bg-dark flex-wrap align-items-center justify-content-center justify-content-lg-start py-2">
-    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+    <a href="{{route('new-sale')}}"
+        class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
         <img src="{{ asset('img/logo.png') }}" alt="logo" width="100" height="32">
     </a>
     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
