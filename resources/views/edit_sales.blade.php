@@ -121,6 +121,136 @@
                         </div>
                     </div>
 
+                    <div class="card border-info mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Parcelas da Venda</h5>
+                        </div>
+                        <div class="card-body">
+                            @if($sale->installments && count($sale->installments) > 0)
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th scope="col">Parcela</th>
+                                            <th scope="col">Valor</th>
+                                            <th scope="col">Data de Vencimento</th>
+                                            <th scope="col">Tipo de Pagamento</th>
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($sale->installments as $index => $installment)
+                                        @php
+                                        $isPaid = is_object($installment) ? $installment->is_paid :
+                                        ($installment['is_paid'] ?? false);
+                                        $dueDate = is_object($installment) ? $installment->due_date :
+                                        ($installment['due_date'] ?? now());
+                                        $amount = is_object($installment) ? $installment->amount :
+                                        ($installment['amount'] ?? 0);
+                                        $paymentType = is_object($installment) ? $installment->payment_type :
+                                        ($installment['payment_type'] ?? 'pending');
+                                        @endphp
+                                        <tr
+                                            class="{{ $isPaid ? 'table-success' : (\Carbon\Carbon::parse($dueDate) < now() ? 'table-danger' : '') }}">
+                                            <td>
+                                                <strong>{{ $index + 1 }}º Parcela</strong>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success">
+                                                    R$ {{ number_format($amount, 2, ',', '.') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($dueDate)->format('d/m/Y') }}
+                                                @if(\Carbon\Carbon::parse($dueDate) < now() && !$isPaid) <small
+                                                    class="text-danger">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    ({{ \Carbon\Carbon::parse($dueDate)->diffForHumans() }})
+                                                    </small>
+                                                    @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">
+                                                    {{ ucfirst($paymentType) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if($isPaid)
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle"></i> Pago
+                                                </span>
+                                                @else
+                                                @if(\Carbon\Carbon::parse($dueDate) < now()) <span
+                                                    class="badge bg-danger">
+                                                    <i class="fas fa-clock"></i> Vencido
+                                                    </span>
+                                                    @else
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-hourglass-half"></i> Pendente
+                                                    </span>
+                                                    @endif
+                                                    @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+
+                                <div class="text-center mt-3">
+
+                                    <a href="{{ route('edit_installments') }}" class="btn btn-warning">
+                                        Atualizar Parcelas
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title">Total de Parcelas</h6>
+                                            <h4 class="text-primary">{{ count($sale->installments) }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title">Parcelas Pagas</h6>
+                                            <h4 class="text-success">
+                                                @php
+                                                $paidCount = 0;
+                                                foreach($sale->installments as $inst) {
+                                                $isPaidInst = is_object($inst) ? $inst->is_paid : ($inst['is_paid'] ??
+                                                false);
+                                                if($isPaidInst) $paidCount++;
+                                                }
+                                                @endphp
+                                                {{ $paidCount }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title">Parcelas Pendentes</h6>
+                                            <h4 class="text-warning">
+                                                {{ count($sale->installments) - $paidCount }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @else
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-info-circle"></i>
+                                Nenhuma parcela encontrada para esta venda.
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <a href="{{ route('sales.index') }}" class="btn btn-secondary">
                             <i class="fas fa-times me-1"></i>Cancelar
@@ -135,40 +265,40 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const quantityInputs = document.querySelectorAll('input[name*="[quantity]"]');
-        const priceInputs = document.querySelectorAll('input[name*="[unit_price]"]');
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInputs = document.querySelectorAll('input[name*="[quantity]"]');
+            const priceInputs = document.querySelectorAll('input[name*="[unit_price]"]');
 
-        function updateTotals() {
-            let grandTotal = 0;
+            function updateTotals() {
+                let grandTotal = 0;
 
-            quantityInputs.forEach((qtyInput, index) => {
-                const priceInput = priceInputs[index];
-                const qty = parseFloat(qtyInput.value) || 0;
-                const price = parseFloat(priceInput.value) || 0;
-                const total = qty * price;
+                quantityInputs.forEach((qtyInput, index) => {
+                    const priceInput = priceInputs[index];
+                    const qty = parseFloat(qtyInput.value) || 0;
+                    const price = parseFloat(priceInput.value) || 0;
+                    const total = qty * price;
 
-                const totalField = document.querySelector(
-                    `input[readonly][value*="R$"]:nth-of-type(${index + 1})`);
-                if (totalField) {
-                    totalField.value =
-                        `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    const totalField = document.querySelector(
+                        `input[readonly][value*="R$"]:nth-of-type(${index + 1})`);
+                    if (totalField) {
+                        totalField.value =
+                            `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    }
+
+                    grandTotal += total;
+                });
+
+                document.querySelector('input[name="total_amount"]').value = grandTotal.toFixed(2);
+                const totalDisplay = document.querySelector('input[readonly][value*="R$"]:last-of-type');
+                if (totalDisplay) {
+                    totalDisplay.value = `R$ ${grandTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 }
-
-                grandTotal += total;
-            });
-
-            document.querySelector('input[name="total_amount"]').value = grandTotal.toFixed(2);
-            const totalDisplay = document.querySelector('input[readonly][value*="R$"]:last-of-type');
-            if (totalDisplay) {
-                totalDisplay.value = `R$ ${grandTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             }
-        }
 
-        [...quantityInputs, ...priceInputs].forEach(input => {
-            input.addEventListener('input', updateTotals);
+            [...quantityInputs, ...priceInputs].forEach(input => {
+                input.addEventListener('input', updateTotals);
+            });
         });
-    });
     </script>
 
 </x-layout.main>

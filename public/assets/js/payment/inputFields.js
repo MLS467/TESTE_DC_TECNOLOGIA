@@ -5,8 +5,12 @@ const quantity_installments = document.getElementById("quantity_installments");
 const installment = document.getElementById("installment");
 const subtotalInput = document.getElementById("subtotal");
 
-const sales = JSON.parse(localStorage.getItem("sales"));
-const subtotal = parseFloat(sales.subtotal) || 0;
+let subtotal = parseFloat(document.getElementById("subtotal").value) || 0;
+
+if (subtotal === 0) {
+    const sales = JSON.parse(localStorage.getItem("sales"));
+    subtotal = parseFloat(sales?.subtotal) || 0;
+}
 
 subtotalInput.value = `R$ ${subtotal.toFixed(2)}`;
 

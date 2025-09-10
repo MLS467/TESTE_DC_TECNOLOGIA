@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\client\ClientController;
+use App\Http\Controllers\installment\InstallmentController;
 use App\Http\Controllers\product\ProductController;
 use App\Http\Controllers\sales\NewSalesController;
 use App\Http\Controllers\sales\printController;
@@ -21,6 +22,10 @@ Route::middleware(['authenticate'])->group(function () {
     Route::get('/new-sale', NewSalesController::class)->name('new-sale');
 
     Route::view('/payment', 'payment')->name('payment');
+
+    Route::post('/edit-installments', [InstallmentController::class, 'saveInstallmentsInLocalStorage'])->name('installments_save');
+
+    Route::get('/edit-installments', [InstallmentController::class, 'editInstallments'])->name('edit_installments');
 });
 
 

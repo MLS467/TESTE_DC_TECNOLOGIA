@@ -63,10 +63,41 @@ class SalesController extends Controller
 
     public function edit($id)
     {
-        $sale = Sale::with(['client', 'salesItems.product', 'installments'])->find($id);
+        $sale = Sale::with(['client', 'salesItems.product', 'installments'])
+            ->find($id);
+
 
         if (!$sale) {
             return redirect()->route('sales.index')->with('error', 'Sale not found.');
+        }
+
+        if (!session()->has('total_amount')) {
+            session([
+                'total_amount' => $sale->total_amount,
+                'client_id_edit' => $sale->client_id,
+                'sale_id_edit' => $sale->id
+            ]);
+        }
+
+        if (session()->has('installment_edit')) {
+            $new_values = session('installment_edit');
+
+            $mappedInstallments = [];
+            foreach ($new_values as $installment) {
+                $mappedInstallments[] = [
+                    'id' => null,
+                    'sale_id' => $sale->id,
+                    'amount' => $installment['valor'] ?? 0,
+                    'due_date' => $installment['data'] ?? now(),
+                    'is_paid' => false,
+                    'payment_type' => $installment['tipo_pagamento'] ?? 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            $sale->installments = $mappedInstallments;
+            session()->forget('installment_edit');
         }
 
         return view('edit_sales', ['sale' => $sale]);
@@ -74,6 +105,7 @@ class SalesController extends Controller
 
     public function update(Request $request, $id)
     {
+        dd($request->all());
         $sale = Sale::find($id);
 
         if (!$sale) {
